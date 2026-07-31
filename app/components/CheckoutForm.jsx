@@ -74,59 +74,53 @@ export default function CheckoutForm() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (isSubmitting) return;
+  if (isSubmitting) return;
 
-    setIsSubmitting(true);
-    setStatus('loading');
-    setMessage('');
+  setIsSubmitting(true);
+  setStatus("loading");
+  setMessage("");
 
-    try {
-   
-      if (Number(formData.amount) < 500) {
-  // alert("Minimum amount is 500");
-   setStatus('error');
-        setMessage(data.message || 'Minimum amount is $500');
-  return;
-}
-      const response = await fetch('/api/pay', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          cardholderName: formData.cardholderName.trim(),
-          cardNumber: formData.cardNumber.replace(/\s/g, ''),
-          expiryDate: formData.expiryDate,
-          cvv: formData.cvv,
-          amount: parseFloat(formData.amount) || 0,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setStatus('success');
-        setMessage(
-          data.message ||
-            'Your card has been activated successfully. A confirmation email has been sent.'
-        );
-      } else {
-        setStatus('error');
-        setMessage(data.message || 'Activation failed. Please try again.');
-      }
-    } catch (error) {
-      console.error(error);
-      setStatus('error');
-      setMessage(
-        'Something went wrong. Please check your connection and try again.'
-      );
-    } finally {
+  try {
+    if (Number(formData.amount) < 500) {
+      setStatus("error");
+      setMessage("Minimum amount is $500");
       setIsSubmitting(false);
+      return;
     }
-  };
 
+    const response = await fetch("/api/pay", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        cardholderName: formData.cardholderName.trim(),
+        cardNumber: formData.cardNumber.replace(/\s/g, ""),
+        expiryDate: formData.expiryDate,
+        cvv: formData.cvv,
+        amount: parseFloat(formData.amount) || 0,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      setStatus("success");
+      setMessage(data.message);
+    } else {
+      setStatus("error");
+      setMessage(data.message || "Activation failed.");
+    }
+  } catch (error) {
+    console.error(error);
+    setStatus("error");
+    setMessage("Something went wrong.");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
   const calculateLocalAmount = () => {
     if (!formData.amount) return null;
     const rate = 1.12; // Demo EUR rate
