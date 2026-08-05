@@ -59,7 +59,7 @@ export default function CheckoutForm() {
         formattedValue =
           formattedValue.slice(0, 2) + '/' + formattedValue.slice(2, 4);
       }
-      if (formattedValue.length > 5) return;
+      
     }
 
     if (name === 'cvv') {
@@ -83,12 +83,7 @@ export default function CheckoutForm() {
   setMessage("");
 
   try {
-    if (Number(formData.amount) < 500) {
-      setStatus("error");
-      setMessage("Minimum amount is $500");
-      setIsSubmitting(false);
-      return;
-    }
+    
 
     const response = await fetch("/api/pay", {
       method: "POST",
